@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>管理员端 - 物资数据管理系统</title>
+    <link rel="stylesheet" href="骨架粗略.css">
+    <style>
+        /* ================= 1. 基础 ================= */
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background-color: #000 !important;
+            overflow: auto;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        .hero-container {
+            width: 100vw; height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            position: relative;
+            background: #111111 !important; 
+        }
+
+        .hero-container::after {
+            display: none !important; 
+        }
+
+        .main-stage-admin {
+            opacity: 0; animation: pureFadeIn 1.2s ease-out forwards;
+            display: flex; align-items: stretch; gap: 24px;
+            width: 1180px; height: 680px; z-index: 10;
+        }
+
+        @keyframes pureFadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ================= 2. 布局尺寸 ================= */
+        .left-col { display: flex; flex-direction: column; gap: 20px; width: 560px; height: 100%; }
+        .right-col { width: 600px; height: 100%; display: flex; flex-direction: column; }
+        .panel-box { background-size: 100% 100%; background-repeat: no-repeat; box-sizing: border-box; position: relative; }
+
+        /* 左上：管理员入口框 */
+        .box-top-left {
+            background-image: url('images/最后/方框1.png'); height: 150px;
+            padding: 30px; display: flex; flex-direction: column;
+            justify-content: center; align-items: flex-start;
+            margin-top: 30px;
+        }
+        .title-row { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+        .img-admin-title { height: 42px; width: auto; object-fit: contain; }
+        .img-arrow { height: 30px; width: auto; transform: translateY(6px); }
+        .img-admin-en { height: 18px; width: auto; opacity: 0.8; }
+
+        /* 3. 左下：管理中枢框 */
+        .box-bottom-left {
+            background-image: url('images/最后/方框2.png');
+            flex: 1;
+            padding: 36px 28px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        
+        .mgt-header { display: flex; flex-direction: column; align-items: flex-start; }
+        .img-mgt-title { height: 28px; width: auto; object-fit: contain; margin-bottom: 6px; }
+        .img-mgt-desc { height: 16px; width: auto; opacity: 0.6; object-fit: contain; }
+
+        .action-module { 
+            width: 100%; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px; 
+            align-items: flex-start; 
+        }
+
+        .standard-height { height: 40px !important; }
+
+        .input-btn-row { display: flex; gap: 15px; align-items: center; width: 100%; }
+        
+        /* 搜索框背景 */
+        .white-input-bg {
+            flex: 1;
+            background-image: url('images/最后/搜索栏.png');
+            background-size: 100% 100%;
+            display: flex; align-items: center; padding: 0 25px; box-sizing: border-box;
+        }
+        .white-input-bg input { width: 100%; height: 100%; background: transparent; border: none; outline: none; color: #000; font-size: 18px; }
+
+        /* 灰胶囊背景 (修改点：增加了cursor和高度撑满) */
+        .btn-container-input {
+            width: 100%;
+            background-image: url('images/最后/Button Container.png');
+            background-size: 100% 100%;
+            display: flex; align-items: center; padding: 0 25px; box-sizing: border-box;
+            cursor: text; 
+        }
+        /* 确保input标签填满胶囊 */
+        .btn-container-input input { 
+            width: 100%; 
+            height: 100%; 
+            background: transparent; 
+            border: none; 
+            outline: none; 
+            color: #fff; 
+            font-size: 16px; 
+        }
+        /* 占位符颜色微调 */
+        .btn-container-input input::placeholder { color: rgba(255,255,255,0.4); }
+
+        .img-submit-btn {
+            width: 100%;
+            height: 52px;
+            object-fit: fill;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .img-submit-btn:hover { transform: scale(1.02); }
+
+        .tag-img { height: 34px; width: auto; object-fit: contain; }
+
+        .btn-img { height: 40px; width: auto; object-fit: contain; cursor: pointer; transition: transform 0.2s; }
+        .btn-img:hover { transform: scale(1.05); }
+
+        /* ================= 4. 右侧面板 ================= */
+        .box-right {
+            background-image: url('images/最后/方框3.png'), url('images/最后/背景.png');
+            background-repeat: no-repeat, no-repeat;
+            background-position: center, right top;
+            background-size: 100% 100%, 120% 120%;
+            height: 650px; padding: 15px 50px;
+            /* 👈 新增下面两行，开启弹性布局，撑开容器 */
+    display: flex;
+    flex-direction: column; margin-top: 30px; box-sizing: border-box;
+        }
+        .img-db-title {
+            height: 50px; width: auto; object-fit: contain; margin-bottom: 10px;
+            flex-shrink: 0; z-index: 2; position: relative;
+        }
+        .data-list { list-style: none; padding: 0; margin: 0; 
+        /* 👈 新增下面三行，开启局部滑轨 */
+                    flex: 1; 
+                    overflow-y: auto; 
+                    padding-right: 15px; /* 给右侧滚动条留出一点空间，防止挡住文字 */
+                    }   
+        /* 👈 可选：如果你不想用浏览器默认的丑陋滚动条，把这段加上去美化一下 */
+        .data-list::-webkit-scrollbar { width: 6px; }
+        .data-list::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.3); border-radius: 4px; }
+        .data-list::-webkit-scrollbar-track { background: transparent; }
+
+        .data-item { display: flex; align-items: center; gap: 20px; padding: 15px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); color: #fff; font-size: 18px; }
+        
+        .yellow-badge { 
+            background-color: #98FF98; 
+            color: #000; 
+            font-weight: bold; 
+            font-size: 14px; 
+            padding: 4px 10px; 
+            border-radius: 4px; 
+            min-width: 35px; 
+            text-align: center; 
+            display: inline-block;
+        }
+
+        /* ================ 导航栏胶囊浮动增强 (局部覆盖) ================ */
+       .dropdown-menu a {
+            transition: all 0.2s ease-in-out !important;
+            background: rgba(255, 255, 255, 0.15) !important;
+            backdrop-filter: blur(10px) !important;
+            
+        }
+       .dropdown-menu a:hover {
+            transform: translateY(-3px) !important; /* 微微上浮，手感更好 */
+            background: rgba(255, 255, 255, 0.35) !important; /* 背景变成更亮的半透明白色 */
+            color: #ffffff !important; /* 确保文字是纯白 */
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.8) !important; /* 让文字本身发出柔和的白光 */
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2) !important; /* 整个胶囊边缘泛起淡淡的白晕 */
+            filter: none !important;
+            outline: none !important;
+        }
+        
+        .has-dropdown {
+            perspective: 1000px; 
+        }
+
+        /* ================ "hi, user" 胶囊放大与发光动效 ================ */
+        #rolePill {
+            transition: all 0.3s ease !important;
+        }
+        
+        #rolePill:hover {
+            transform: scale(1.05) !important;
+            box-shadow: 0 0 25px rgba(152, 255, 152, 0.6) !important;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="navbar">
+    <a href="#" class="nav-logo" id="dynamicHomeLogo">
+        <img src="images/首页/主页面.png" alt="首页">
+    </a>
+    <nav class="nav-links">
+        <div class="nav-item has-dropdown">
+            <a href="javascript:void(0)" class="nav-img-btn" id="dropdownBtn">
+                <img src="images/首页/识别材料.png" alt="识别材料">
+            </a>
+            <div class="dropdown-menu" id="dropdownMenu">
+                <a href="bone骨架 连接设备.html">连接设备</a> 
+                <a href="bone骨架 测试模块.html">识别区域</a>
+            </div>
+        </div>
+        <a href="#" class="nav-img-btn" id="navQueryBtn">
+            <img src="images/首页/查询材料.png" alt="查询材料">
+        </a>
+        <a href="about.html" class="nav-img-btn"><img src="images/首页/关于我们.png" alt="关于我们"></a>
+    </nav>
+    <div class="auth-buttons">
+        <div id="rolePill" style="background-color: #98FF98; color: #000; padding: 10px 20px; border-radius: 30px; font-weight: 800; cursor: pointer;">hi, admin</div>
+    </div>
+</header>
+    <div class="hero-container">
+      <main class="main-stage-admin">
+        <div class="left-col">
+            <div class="panel-box box-top-left">
+                <div class="title-row">
+                    <img src="images/最后/管理员.png" alt="管理员入口" class="img-admin-title">
+                    <img src="images/最后/箭头.png" alt="箭头" class="img-arrow">
+                </div>
+                <img src="images/最后/管理员英文.png" alt="Administrator Portal" class="img-admin-en">
+            </div>
+
+            <div class="panel-box box-bottom-left">
+                <div class="mgt-header">
+                    <img src="images/最后/管理中枢.png" alt="管理中枢" class="img-mgt-title">
+                    <img src="images/最后/Section Description2.png" alt="Desc" class="img-mgt-desc">
+                </div>
+
+                <!-- 模块 1: 检索 -->
+                <div class="action-module">
+                    <div class="input-btn-row standard-height">
+                        <div class="white-input-bg standard-height">
+                            <input type="text" id="searchInput" placeholder="输入编号搜索...">
+                        </div>
+                        <img src="images/最后/搜索键.png" alt="搜索" class="btn-img standard-height" onclick="performSearch()">
+                    </div>
+                </div>
+
+                <!-- 模块 2: 录入 -->
+                <div class="action-module">
+                    <img src="images/最后/录入.png" alt="录入" class="tag-img">
+                    <div class="btn-container-input standard-height">
+                        <input type="text" id="addName" placeholder="在此输入材料名称...">
+                    </div>
+                    <div class="btn-container-input standard-height">
+                        <input type="text" id="addDesc" placeholder="在此输入材料简介...">
+                    </div>
+                    <img src="images/最后/提交并.png" alt="提交" class="img-submit-btn" onclick="addMaterial()">
+                </div>
+
+                <!-- 模块 3: 移除 -->
+                <div class="action-module">
+                    <img src="images/最后/移除.png" alt="移除" class="tag-img">
+                    <div class="input-btn-row standard-height">
+                        <div class="btn-container-input standard-height" style="flex: 1;">
+                            <input type="text" id="deleteInput" placeholder="输入需要移除的编号...">
+                        </div>
+                        <img src="images/最后/执行.png" alt="删除" class="btn-img standard-height" onclick="deleteMaterial()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel-box box-right right-col">
+            <img src="images/最后/系统演示.png" alt="系统演示数据库" class="img-db-title">
+            <ul class="data-list" id="demoList"></ul>
+        </div>
+      </main>
+    </div>
+
+    <script>
+
+        // ======= 新增：下拉菜单控制逻辑 =======
+const dropdownBtn = document.getElementById('dropdownBtn');
+const dropdownMenu = document.getElementById('dropdownMenu');
+
+dropdownBtn.addEventListener('click', function(e) {
+  e.preventDefault(); 
+  e.stopPropagation();
+  // 切换 show 类名来控制显示/隐藏
+  dropdownMenu.classList.toggle('show');
+});
+
+// 点击页面其他地方关闭菜单
+document.addEventListener('click', function(e) {
+  if (!dropdownBtn.contains(e.target)) {
+    dropdownMenu.classList.remove('show');
+  }
+});
+      // 统一扩展数据库
+      const database = {
+        "001": { name: "304不锈钢 (SUS304)", comp: "Cr 18-20%, Ni 8-10.5%, C ≤0.08%, Fe 余量", desc: "最常见的奥氏体不锈钢，具有良好的耐蚀性和成型性，广泛用于食品设备和一般化工设备。" },
+        "002": { name: "316不锈钢 (SUS316)", comp: "Cr 16-18%, Ni 10-14%, Mo 2-3%, Fe 余量", desc: "添加了钼元素，抗氯离子点蚀能力强，常用于海洋环境、化工及医疗器械。" },
+        "003": { name: "6061铝合金 (Al-Mg-Si系)", comp: "Mg 0.8-1.2%, Si 0.4-0.8%, Cu 0.15-0.4%, Al 余量", desc: "具有良好的可塑性和优良的焊接性，广泛应用于自动化机械零件、精密加工等。" },
+        "004": { name: "7075铝合金 (Al-Zn-Mg-Cu系)", comp: "Zn 5.1-6.1%, Mg 2.1-2.9%, Cu 1.2-2.0%, Al 余量", desc: "超硬铝合金，强度极高，常用于航空航天工业及高应力结构件。" },
+        "005": { name: "TC4钛合金 (Ti-6Al-4V)", comp: "Al 5.5-6.75%, V 3.5-4.5%, Ti 余量", desc: "综合力学性能优异，比强度高，广泛用于航空发动机叶片、医疗植入物等。" },
+        "006": { name: "H62普通黄铜 (Cu-Zn合金)", comp: "Cu 60.5-63.5%, Zn 余量", desc: "具有良好的力学性能，热态下塑性好，常用于制造各种深拉伸和弯曲制造的受力零件。" },
+        "007": { name: "QBe2铍青铜 (Cu-Be合金)", comp: "Be 1.8-2.1%, Ni+Co ≥0.2%, Cu 余量", desc: "极高的强度、硬度、弹性极限和疲劳极限，常用于精密弹簧、电接触元件。" },
+        "008": { name: "Inconel 718 镍基高温合金", comp: "Ni 50-55%, Cr 17-21%, Nb 4.75-5.5%, Fe 余量", desc: "在-253~700℃温度范围内具有良好的综合性能，用于航空发动机涡轮盘等。" },
+        "009": { name: "AZ31B变形镁合金", comp: "Al 2.5-3.5%, Zn 0.6-1.4%, Mn 0.2-1.0%, Mg 余量", desc: "比强度高、减震性好，广泛应用于汽车、电子产品的轻量化壳体。" },
+        "010": { name: "Q235普通碳素结构钢", comp: "C 0.12-0.20%, Mn 0.30-0.67%, Si ≤0.30%, Fe 余量", desc: "含碳量适中，综合性能较好，强度、塑性和焊接等性能得到较好配合，建筑常用。" }
+      };
+
+      function refreshList() {
+        const listElement = document.getElementById("demoList");
+        listElement.innerHTML = "";
+        Object.keys(database).sort().forEach(code => {
+          let li = document.createElement("li");
+          li.className = "data-item";
+          // 显示名称
+          li.innerHTML = `<span class="yellow-badge">${code}</span> ${database[code].name}`;
+          listElement.appendChild(li);
+        });
+      }
+
+      window.onload = refreshList;
+
+      function performSearch() {
+        const val = document.getElementById("searchInput").value.trim();
+        const item = database[val];
+        if(item) {
+            // 利用弹窗显示详细信息
+            alert(`✅ 检索成功：\n名称：${item.name}\n成分：${item.comp}\n简介：${item.desc}`);
+        } else {
+            alert("❌ 未找到该编号");
+        }
+      }
+
+      // 完善：录入新材料逻辑 (适配对象)
+      function addMaterial() {
+        const name = document.getElementById("addName").value.trim();
+        const desc = document.getElementById("addDesc").value.trim();
+        
+        if(!name) { alert("请输入材料名称"); return; }
+
+        const lastId = Object.keys(database).sort().pop();
+        const newId = String(parseInt(lastId) + 1).padStart(3, '0');
+        
+        // 生成对象存入
+        database[newId] = { name: name, comp: "手动录入，暂无成分数据", desc: desc || "无" };
+        refreshList();
+        
+        document.getElementById("addName").value = "";
+        document.getElementById("addDesc").value = "";
+        alert("成功录入！编号为：" + newId);
+      }
+
+      // 完善：移除材料逻辑 (适配对象)
+      function deleteMaterial() {
+        const id = document.getElementById("deleteInput").value.trim();
+        if(database[id]) {
+            const matName = database[id].name; // 获取名称用于提示
+            delete database[id];
+            refreshList();
+            document.getElementById("deleteInput").value = "";
+            alert("已成功移除：" + matName);
+        } else {
+            alert("未找到该编号，无法移除");
+        }
+      }
+
+      // ================= 【新增】智能路由跳转逻辑 =================
+      const currentUserRole = localStorage.getItem('userRole') || 'admin'; // 默认保底
+
+      // 1. 主页面 Logo 智能跳转
+      const homeLogo = document.getElementById('dynamicHomeLogo');
+      const roleHomeMap = {
+          'admin': 'bone骨架（首页） 管理员页面.html',
+          'teacher': 'bone骨架（首页） 教师页面.html',
+          'student': 'bone骨架（首页） 学生页面.html'
+      };
+      if (homeLogo) {
+          homeLogo.href = roleHomeMap[currentUserRole] || 'index.html';
+      }
+
+      // 2. 查询材料 智能跳转
+      const navQueryBtn = document.getElementById('navQueryBtn');
+      const roleQueryMap = {
+          'admin': 'Administrator.html',
+          'teacher': 'teacher.html',
+          'student': 'student.html'
+      };
+      if (navQueryBtn) {
+          navQueryBtn.href = roleQueryMap[currentUserRole] || '#';
+      }
+    </script>
+</body>
+</html>

@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关于我们 - 多光谱材料识别系统</title>
+    <link rel="stylesheet" href="骨架粗略.css">
+    <style>
+        /* ================= 1. 基础重置与长页面滚动 ================= */
+        body, html {
+            margin: 0; padding: 0; width: 100%; 
+            background-color: #000 !important; 
+            overflow-y: auto !important; 
+            font-family: 'Helvetica Neue', Arial, "Microsoft YaHei", sans-serif;
+        }
+
+        .hero-container {
+            min-height: 100vh !important; 
+            height: auto !important; 
+            padding-bottom: 150px; 
+        }
+
+        /* ================ 2. 导航栏动效增强 ================ */
+        .dropdown-menu a {
+            transition: all 0.2s ease-in-out !important;
+            background: rgba(255, 255, 255, 0.15) !important;
+            backdrop-filter: blur(10px) !important;
+        }
+        .dropdown-menu a:hover {
+            transform: translateY(-3px) !important; 
+            background: rgba(255, 255, 255, 0.35) !important; 
+            color: #ffffff !important; 
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.8) !important; 
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2) !important; 
+        }
+        .has-dropdown { perspective: 1000px; }
+        #rolePill { transition: all 0.3s ease !important; }
+        #rolePill:hover { transform: scale(1.05) !important; box-shadow: 0 0 25px rgba(152, 255, 152, 0.6) !important; }
+
+        /* ================= 3. 关于我们页面全局排版 ================= */
+        .about-wrapper {
+            padding-top: 160px; 
+            width: 85%;
+            max-width: 1200px; 
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 220px; 
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: pureFadeIn 1s ease-out forwards;
+        }
+        .section-header h1 {
+            font-size: 52px;
+            color: #fff;
+            margin: 0;
+            font-weight: 300;
+            letter-spacing: 4px;
+            text-shadow: 0 4px 20px rgba(0, 255, 180, 0.3);
+        }
+        .section-header p {
+            color: #00e676;
+            font-size: 16px;
+            letter-spacing: 3px;
+            margin-top: 12px;
+            text-transform: uppercase;
+            opacity: 0.8;
+        }
+
+        .glass-panel-base {
+            background: rgba(20, 20, 20, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 60px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.02);
+            animation: pureFadeIn 1.2s ease-out forwards;
+        }
+
+        /* ================= 4. 项目愿景部分 ================= */
+        .vision-intro-text {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.85);
+            line-height: 1.8;
+            margin-bottom: 60px;
+            text-align: center;
+            max-width: 950px;
+            margin-left: auto;
+            margin-right: auto;
+            font-weight: 300;
+        }
+        .vision-intro-text strong { color: #fff; font-weight: 500; border-bottom: 1px solid #00e676; }
+
+        .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 40px 30px;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        .feature-card:hover {
+            transform: translateY(-8px);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(0, 230, 118, 0.4);
+            box-shadow: 0 15px 30px rgba(0, 230, 118, 0.15);
+        }
+        
+        .feature-title { font-size: 20px; color: #fff; margin-bottom: 15px; font-weight: bold; letter-spacing: 1px; }
+        .feature-desc { font-size: 14px; color: rgba(255, 255, 255, 0.6); line-height: 1.7; }
+
+        /* ================= 5. 团队成员部分 ================= */
+        .team-section {
+            animation: pureFadeIn 1.4s ease-out forwards;
+            width: 100%; 
+        }
+
+        .team-subtitle {
+            text-align: left; 
+            margin-bottom: 50px; 
+            padding-left: 20px; 
+        }
+        .team-subtitle h3 {
+            font-size: 42px; 
+            color: #fff;
+            margin: 0;
+            font-weight: 700; 
+            font-family: 'Helvetica Neue', Arial, sans-serif; 
+        }
+
+        .team-grid {
+            display: flex;
+            flex-wrap: wrap; 
+            justify-content: center; 
+            gap: 50px; 
+            width: 100%;
+        }
+
+        .member-card {
+            flex: 0 0 280px; 
+            height: 400px; 
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 12px; 
+            overflow: hidden; 
+            display: flex;
+            flex-direction: column;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .member-card:hover {
+            transform: translateY(-8px);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(0, 230, 118, 0.4);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        }
+
+       .card-img-top img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; 
+            display: block;
+            /* 🌟 新增：默认状态下将亮度调暗到 50%，并加上平滑的过渡动画 */
+            filter: brightness(0.5); 
+            transition: filter 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        /* 🌟 新增：当鼠标悬浮在整个卡片上时，图片瞬间恢复到 100% 正常亮度 */
+        .member-card:hover .card-img-top img {
+            filter: brightness(1);
+        }
+
+        .card-info-bottom {
+            width: 100%;
+            height: 40%; 
+            padding: 15px 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+        }
+
+        .member-name { font-size: 18px; color: #f7e018; font-weight: bold; margin-bottom: 4px; letter-spacing: 1px;}
+        .member-title { font-size: 12px; color: rgba(255, 255, 255, 0.6); margin-bottom: 8px;}
+        .member-divider { width: 30px; height: 1px; background: rgba(0, 230, 118, 0.5); margin-bottom: 10px; }
+
+        .member-tasks-simple { 
+            width: 100%; 
+            list-style: none; 
+            padding: 0; 
+            margin: 0; 
+            text-align: left; 
+        }
+        .member-tasks-simple li {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 4px;
+            line-height: 1.4;
+            position: relative;
+            padding-left: 10px;
+        }
+        .member-tasks-simple li::before { 
+            content: ''; 
+            position: absolute; 
+            left: 0; 
+            top: 5px; 
+            width: 4px; 
+            height: 4px; 
+            background-color: rgba(0, 230, 118, 0.6); 
+            border-radius: 50%; 
+        }
+
+        /* ================= 6. 研发历程/时间轴部分 (全新加入) ================= */
+        .timeline-section {
+            animation: pureFadeIn 1.6s ease-out forwards;
+            width: 100%;
+        }
+
+        .timeline-container {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 0;
+        }
+
+        /* 居中的霓虹能量线 */
+        .timeline-line {
+            position: absolute;
+            width: 2px;
+            background: rgba(0, 230, 118, 0.3);
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -1px;
+            box-shadow: 0 0 15px rgba(0, 230, 118, 0.6);
+        }
+
+        /* 时间轴节点包裹器 */
+        .timeline-item {
+            padding: 20px 40px;
+            position: relative;
+            width: 50%;
+            box-sizing: border-box;
+        }
+
+        /* 左侧节点排版 */
+        .timeline-item.left { left: 0; text-align: right; }
+        /* 右侧节点排版 */
+        .timeline-item.right { left: 50%; text-align: left; }
+
+        /* 发光节点圆点 */
+        .timeline-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #f7e018; /* 提取你界面的亮黄色 */
+            position: absolute;
+            top: 35px;
+            box-shadow: 0 0 15px rgba(247, 224, 24, 0.8), 0 0 30px rgba(247, 224, 24, 0.4);
+            z-index: 2;
+        }
+        .timeline-item.left .timeline-dot { right: -7px; }
+        .timeline-item.right .timeline-dot { left: -7px; }
+
+        /* 节点内容卡片 */
+        .timeline-content {
+            padding: 25px 30px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: inline-block;
+            width: 85%;
+            text-align: left;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .timeline-content:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(0, 230, 118, 0.4);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        /* 阶段文本与标题 */
+        .timeline-phase {
+            font-size: 13px;
+            color: #00e676;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .timeline-title {
+            font-size: 20px;
+            color: #fff;
+            margin-bottom: 12px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .timeline-desc {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.7;
+        }
+
+        @keyframes pureFadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hero-container">
+        <header class="navbar">
+            <a href="#" class="nav-logo" id="dynamicHomeLogo">
+                <img src="images/首页/主页面.png" alt="首页">
+            </a>
+            <nav class="nav-links">
+                <div class="nav-item has-dropdown">
+                    <a href="javascript:void(0)" class="nav-img-btn" id="dropdownBtn">
+                        <img src="images/首页/识别材料.png" alt="识别材料">
+                    </a>
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <a href="bone骨架 连接设备.html">连接设备</a> 
+                        <a href="bone骨架 测试模块.html">识别区域</a>
+                    </div>
+                </div>
+                <a href="#" class="nav-img-btn" id="navQueryBtn">
+                    <img src="images/首页/查询材料.png" alt="查询材料">
+                </a>
+                <a href="#" class="nav-img-btn">
+                    <img src="images/首页/关于我们.png" alt="关于我们">
+                </a>
+            </nav>
+            <div class="auth-buttons">
+                <div id="rolePill" style="background-color: #98FF98; color: #000; padding: 10px 20px; border-radius: 30px; font-weight: 800; cursor: pointer;">hi, user</div>
+            </div>
+        </header>
+
+        <main class="about-wrapper">
+            
+            <section class="vision-section">
+                <div class="section-header">
+                    <h1>项目愿景与背景</h1>
+                    <p>Project Vision & Background</p>
+                </div>
+                
+                <div class="glass-panel-base">
+                    <div class="vision-intro-text">
+                        多光谱成像识别材料成分数据管理系统致力于通过前沿的光谱分析技术，洞察物质的微观构成。我们以 <strong>结构稳定、安全高效</strong> 为系统的底层逻辑，打破传统材料数据管理的繁杂壁垒。旨在为用户构建一个高适应性、精准且全方位的数据中枢，让复杂的波长、波数等图谱数据变得触手可及。
+                    </div>
+                    
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-title">多维可视化呈现</div>
+                            <div class="feature-desc">突破枯燥的数据堆砌，系统全面支持图谱数据可视化显示。通过直观的光波曲线与数值反馈，对数据进行可视化处理，让复杂的材料光谱变化一目了然。</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-title">全方位数据中枢</div>
+                            <div class="feature-desc">底层框架扎实，安全性高。不仅支持全方位的数据查询与精准定位，更允许用户自行设置精密数值，确保数据流转的高效与绝对准确。</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-title">极简交互体验</div>
+                            <div class="feature-desc">将复杂的测试与管理流程化繁为简。界面设计秉承简单明了的原则，操作简便，编辑灵活，为用户提供极高适应性的极致流畅体验。</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="team-section">
+                <div class="team-subtitle">
+                    <h3>技术部门</h3>
+                </div>
+
+                <div class="team-grid">
+                    
+                    <div class="member-card">
+                        <div class="card-img-top">
+                            <img src="./members/tcf.jpg" alt="头像"> 
+                        </div>
+                        <div class="card-info-bottom">
+                            <div class="member-name">唐晨枫</div>
+                            <div class="member-title">前端交互 / UX 设计</div>
+                            <div class="member-divider"></div>
+                            <ul class="member-tasks-simple">
+                                <li>前端交互 / UX 设计</li>
+                                <li>动态光谱可视化图表接入</li>
+                                <li>系统 UI 级视觉审美把控</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="member-card">
+                        <div class="card-img-top">
+                            <img src="./members/yrq.jpg" alt="头像占位"> 
+                        </div>
+                        <div class="card-info-bottom">
+                            <div class="member-name">杨润其</div>
+                            <div class="member-title">后端功能/创意</div>
+                            <div class="member-divider"></div>
+                            <ul class="member-tasks-simple">
+                                <li>后端核心功能实现</li>
+                                <li>项目创意提出</li>
+                                <li>系统整体用户体验优化</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="member-card">
+                        <div class="card-img-top">
+                            <img src="./members/lsy.jpg" alt="头像占位">
+                        </div>
+                        <div class="card-info-bottom">
+                            <div class="member-name">李思语</div>
+                            <div class="member-title">前端交互/UX设计</div>
+                            <div class="member-divider"></div>
+                            <ul class="member-tasks-simple">
+                                <li>搜索功能模块设计与实现</li>
+                                <li>页面布局重构与响应式适配</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="member-card">
+                        <div class="card-img-top">
+                            <img src="./members/lmh.jpg" alt="头像占位">
+                        </div>
+                        <div class="card-info-bottom">
+                            <div class="member-name">林铭珩</div>
+                            <div class="member-title">系统测试与运维</div>
+                            <div class="member-divider"></div>
+                            <ul class="member-tasks-simple">
+                                <li>端到端功能测试与性能评估</li>
+                                <li>数据库部署与检索链路优化</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="member-card">
+                        <div class="card-img-top">
+                            <img src="./members/ljg.jpg" alt="头像占位">
+                        </div>
+                        <div class="card-info-bottom">
+                            <div class="member-name">李金格</div>
+                            <div class="member-title">项目协调管理</div>
+                            <div class="member-divider"></div>
+                            <ul class="member-tasks-simple">
+                                <li>研发时间线与版本迭代追踪</li>
+                                <li>技术文档归档与整合</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <section class="team-section">
+                <div class="team-subtitle">
+                    <h3>美术与文字部门</h3>
+                </div>
+
+                <div class="team-grid">
+                    <div class="member-card">
+                        <div class="card-img-top">
+                            <img src="./members/wqw.png" alt="头像占位"> 
+                        </div>
+                        <div class="card-info-bottom">
+                            <div class="member-name">王芊文</div>
+                            <div class="member-title">视觉设计</div>
+                            <div class="member-divider"></div>
+                            <ul class="member-tasks-simple">
+                                <li>系统界面整体视觉风格界定</li>
+                                <li>页面风格构思与样式绘制</li>
+                                <li>组件与背景美工设计</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="member-card">
+                        <div class="card-img-top">
+                            <img src="./members/lzh.jpg" alt="头像占位"> 
+                        </div>
+                        <div class="card-info-bottom">
+                            <div class="member-name">刘志豪</div>
+                            <div class="member-title">材料撰写/项目包装</div>
+                            <div class="member-divider"></div>
+                            <ul class="member-tasks-simple">
+                                <li>开发文档规范化撰写</li>
+                                <li>项目展示PPT设计</li>
+                                <li>系统功能模块描述与版式校对</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="member-card">
+                        <div class="card-img-top">
+                            <img src="./members/xmx.jpg" alt="头像占位">
+                        </div>
+                        <div class="card-info-bottom">
+                            <div class="member-name">谢孟轩</div>
+                            <div class="member-title">媒体 / 素材处理</div>
+                            <div class="member-divider"></div>
+                            <ul class="member-tasks-simple">
+                                <li>核心视觉素材拍摄与后期处理</li>
+                                <li>深色玻璃拟态背景纹理构建</li>
+                                <li>各分辨率下高清贴图适配与导出</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="timeline-section">
+                <div class="team-subtitle">
+                    <h3>研发历程</h3>
+                </div>
+                
+                <div class="timeline-container">
+                    <div class="timeline-line"></div>
+
+                    <div class="timeline-item left">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-phase">3.15</div>
+                            <div class="timeline-title">项目构想</div>
+                            <div class="timeline-desc">确立系统的主要功能以及组内分工</div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item right">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-phase">3.17</div>
+                            <div class="timeline-title">前端交互框架完成</div>
+                            <div class="timeline-desc">依托后端设计的交互功能，大体完成前端交互功能的创建，基本构建出前端页面的雏形</div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item left">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-phase">3.19</div>
+                            <div class="timeline-title">完成前端美化设计</div>
+                            <div class="timeline-desc">在前端框架的基础上，对按钮、页面风格、布局、动画等进行了重新设计，使前端页面更加美观</div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item right">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-phase">3.22</div>
+                            <div class="timeline-title">后端核心功能实现</div>
+                            <div class="timeline-desc">采用Spring Cloud微服务架构，通过服务网格实现跨模块通信治理</div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item left">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-phase">3.25</div>
+                            <div class="timeline-title">前端设计代码实现</div>
+                            <div class="timeline-desc">将重新设计的前端样式用代码实现，并适配不同的屏幕尺寸</div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item right">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-phase">3.31</div>
+                            <div class="timeline-title">前后端对接</div>
+                            <div class="timeline-desc">将成熟的前端网页与后端源码对接，使之成为真正完整的项目</div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        const userRole = localStorage.getItem('userRole') || 'guest';
+        const rolePill = document.getElementById('rolePill');
+        if(rolePill) rolePill.innerText = 'hi, ' + userRole;
+
+        const roleQueryMap = { 'admin': 'Administrator.html', 'teacher': 'teacher.html', 'student': 'student.html' };
+        const roleHomeMap = { 'admin': 'bone骨架（首页） 管理员页面.html', 'teacher': 'bone骨架（首页） 教师页面.html', 'student': 'bone骨架（首页） 学生页面.html' };
+
+        const navQueryBtn = document.getElementById('navQueryBtn');
+        if(navQueryBtn) navQueryBtn.href = roleQueryMap[userRole] || '#';
+        const homeLogo = document.getElementById('dynamicHomeLogo');
+        if(homeLogo) homeLogo.href = roleHomeMap[userRole] || 'bone骨架（首页）.html';
+
+        const dropdownBtn = document.getElementById('dropdownBtn');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        if(dropdownBtn && dropdownMenu) {
+            dropdownBtn.onclick = (e) => { e.preventDefault(); e.stopPropagation(); dropdownMenu.classList.toggle('show'); };
+        }
+        document.onclick = () => { if(dropdownMenu) dropdownMenu.classList.remove('show'); };
+    </script>
+</body>
+</html>

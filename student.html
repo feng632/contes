@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>学生入口 - 物资编号检索系统</title>
+    <link rel="stylesheet" href="骨架粗略.css">
+    <style>
+        /* ================= 1. 基础 ================= */
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            background-color: #000 !important; 
+            overflow: auto; /* 解除页面卡死锁定 */
+            font-family: 'Helvetica Neue', Arial, sans-serif; 
+        }
+        .hero-container { 
+            width: 100vw; height: 100vh; 
+            background-image: url('images/最后/背景1.png'); 
+            background-size: cover; background-position: center; 
+            display: flex; justify-content: center; align-items: center; position: relative; 
+        }
+        .hero-container > * { opacity: 0; animation: pureFadeIn 1.2s ease-out forwards; }
+        @keyframes pureFadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* 统一使用 1180px * 680px 黄金比例 */
+        .main-stage-student { display: flex; align-items: stretch; gap: 24px; width: 1180px; height: 680px; z-index: 10; }
+        .left-col { display: flex; flex-direction: column; gap: 20px; width: 560px; height: 100%; }
+        .right-col { width: 600px; height: 100%; display: flex; flex-direction: column; justify-content: flex-start; }
+        
+        .panel-box { background-size: 100% 100%; background-repeat: no-repeat; box-sizing: border-box; position: relative; }
+        
+        /* 左上角高度调整 */
+        .box-top-left { 
+            background-image: url('images/最后/方框1.png'); 
+            height: 150px; padding: 30px; 
+            display: flex; flex-direction: column; justify-content: center; align-items: flex-start; margin-top: 30px; 
+        }
+        .title-row { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+        .img-feature-title { height: 42px; width: auto; object-fit: contain; } 
+        .img-arrow { height: 30px; width: auto; object-fit: contain; transform: translateY(6px); }
+        .img-section-desc { height: 18px; width: auto; object-fit: contain; opacity: 0.8; margin-left: 0; align-self: flex-start; }
+        
+        .box-bottom-left { 
+            background-image: url('images/最后/方框2.png'); flex: 1; 
+            padding: 36px 28px; display: flex; flex-direction: column; align-items: flex-start; 
+        }
+        .img-sys-title { height: 28px; width: auto; object-fit: contain; margin-bottom: 8px; align-self: flex-start; } 
+        .img-sys-desc { height: 16px; width: auto; object-fit: contain; opacity: 0.6; margin-bottom: 30px; align-self: flex-start; } 
+        
+        .search-action-row { display: flex; gap: 15px; align-items: center; height: 48px; margin-bottom: 25px; width: 100%; }
+        .search-input-wrapper { 
+            flex: 1; height: 100%; background-image: url('images/最后/搜索栏.png'); 
+            background-size: 100% 100%; display: flex; align-items: center; padding: 0 25px; box-sizing: border-box; 
+        }
+        .search-input-wrapper input { width: 100%; background: transparent; border: none; outline: none; color: #000; font-size: 18px; font-weight: bold; }
+        .img-search-btn { height: 100%; width: auto; cursor: pointer; transition: transform 0.2s; }
+        .img-search-btn:hover { transform: scale(1.05); filter: brightness(1.1); }
+        
+        .search-result-area { width: 100%; min-height: 60px; }
+        .img-wait-search { width: 100%; height: 60px; object-fit: fill; display: block; }
+        .img-success-icon { height: 40px; width: auto; object-fit: contain; margin-top: auto; align-self: flex-start; }
+        
+        /* 开启右侧弹性布局与局部滑轨 */
+        .box-right { 
+            background-image: url('images/最后/方框3.png'); height: 650px; padding: 15px 50px; 
+            display: flex; flex-direction: column; margin-top: 30px; box-sizing: border-box;
+        }
+        .img-db-title { height: 50px; width: auto; object-fit: contain; margin-bottom: 10px; flex-shrink: 0; z-index: 2; position: relative;}
+        
+        .data-list { list-style: none; padding: 0; margin: 0; flex: 1; overflow-y: auto; overflow-x: hidden; padding-right: 15px; }
+        .data-list::-webkit-scrollbar { width: 6px; }
+        .data-list::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.3); border-radius: 4px; }
+        .data-list::-webkit-scrollbar-track { background: transparent; }
+        .data-item { display: flex; align-items: center; gap: 20px; padding: 15px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); color: #fff; font-size: 18px; }
+        
+        /* 恢复丢失的徽章样式 */
+        /* 绿色徽章样式 */
+        .yellow-badge { 
+            background-color: #98FF98; 
+            color: #000; 
+            font-weight: bold; 
+            font-size: 14px; 
+            padding: 4px 10px; 
+            border-radius: 4px; 
+            min-width: 35px; 
+            text-align: center; 
+            display: inline-block;
+        }
+
+        .dropdown-menu a { transition: all 0.2s ease-in-out !important; background: rgba(255, 255, 255, 0.15) !important; backdrop-filter: blur(10px) !important; }
+        .dropdown-menu a:hover { transform: translateY(-3px) !important; background: rgba(255, 255, 255, 0.35) !important; color: #ffffff !important; text-shadow: 0 0 8px rgba(255, 255, 255, 0.8) !important; box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2) !important; filter: none !important; outline: none !important; }
+        .has-dropdown { perspective: 1000px; }
+        #rolePill { transition: all 0.3s ease !important; }
+        #rolePill:hover { transform: scale(1.05) !important; box-shadow: 0 0 25px rgba(152, 255, 152, 0.6) !important; }
+    </style>
+  </head>
+
+  <body>
+    <header class="navbar">
+    <a href="#" class="nav-logo" id="dynamicHomeLogo">
+        <img src="images/首页/主页面.png" alt="首页">
+    </a>
+    <nav class="nav-links">
+        <div class="nav-item has-dropdown">
+            <a href="javascript:void(0)" class="nav-img-btn" id="dropdownBtn">
+                <img src="images/首页/识别材料.png" alt="识别材料">
+            </a>
+            <div class="dropdown-menu" id="dropdownMenu">
+                <a href="bone骨架 连接设备.html">连接设备</a> 
+                <a href="bone骨架 测试模块.html">识别区域</a>
+            </div>
+        </div>
+        <a href="#" class="nav-img-btn" id="navQueryBtn">
+            <img src="images/首页/查询材料.png" alt="查询材料">
+        </a>
+        <a href="about.html" class="nav-img-btn"><img src="images/首页/关于我们.png" alt="关于我们"></a>
+    </nav>
+    <div class="auth-buttons">
+        <div id="rolePill" style="background-color: #98FF98; color: #000; padding: 10px 20px; border-radius: 30px; font-weight: 800; cursor: pointer;">hi, user</div>
+    </div>
+</header>
+    <div class="hero-container">
+      <main class="main-stage-student">
+        <div class="left-col">
+            <div class="panel-box box-top-left">
+                <div class="title-row">
+                    <img src="images/最后/Feature Title.png" alt="学生入口" class="img-feature-title">
+                    <img src="images/最后/箭头.png" alt="箭头" class="img-arrow">
+                </div>
+                <img src="images/最后/Section Description.png" alt="Student Login" class="img-section-desc">
+            </div>
+
+            <div class="panel-box box-bottom-left">
+                <img src="images/最后/物资.png" alt="物资编号检索系统" class="img-sys-title">
+                <img src="images/最后/检索英文.png" alt="Material Number Retrieval System" class="img-sys-desc">
+                <div class="search-action-row">
+                    <div class="search-input-wrapper">
+                        <input type="text" id="searchInput" placeholder="" onkeypress="if (event.key === 'Enter') performSearch();">
+                    </div>
+                    <img src="images/最后/搜索键.png" alt="执行搜索" class="img-search-btn" onclick="performSearch()">
+                </div>
+                <div id="resultDisplay" class="search-result-area">
+                    <img src="images/最后/等待检索.png" alt="等待检索" class="img-wait-search" id="waitImg">
+                </div>
+                <img src="images/最后/检索成功符号.png" alt="定位符号" class="img-success-icon">
+            </div>
+        </div>
+
+        <div class="panel-box box-right right-col">
+            <img src="images/最后/系统演示.png" alt="系统演示数据库" class="img-db-title">
+            <ul class="data-list" id="demoList"></ul>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      const database = {
+        "001": { name: "304不锈钢 (SUS304)", comp: "Cr 18-20%, Ni 8-10.5%, C ≤0.08%, Fe 余量", desc: "最常见的奥氏体不锈钢，具有良好的耐蚀性和成型性，广泛用于食品设备和一般化工设备。" },
+        "002": { name: "316不锈钢 (SUS316)", comp: "Cr 16-18%, Ni 10-14%, Mo 2-3%, Fe 余量", desc: "添加了钼元素，抗氯离子点蚀能力强，常用于海洋环境、化工及医疗器械。" },
+        "003": { name: "6061铝合金 (Al-Mg-Si系)", comp: "Mg 0.8-1.2%, Si 0.4-0.8%, Cu 0.15-0.4%, Al 余量", desc: "具有良好的可塑性和优良的焊接性，广泛应用于自动化机械零件、精密加工等。" },
+        "004": { name: "7075铝合金 (Al-Zn-Mg-Cu系)", comp: "Zn 5.1-6.1%, Mg 2.1-2.9%, Cu 1.2-2.0%, Al 余量", desc: "超硬铝合金，强度极高，常用于航空航天工业及高应力结构件。" },
+        "005": { name: "TC4钛合金 (Ti-6Al-4V)", comp: "Al 5.5-6.75%, V 3.5-4.5%, Ti 余量", desc: "综合力学性能优异，比强度高，广泛用于航空发动机叶片、医疗植入物等。" },
+        "006": { name: "H62普通黄铜 (Cu-Zn合金)", comp: "Cu 60.5-63.5%, Zn 余量", desc: "具有良好的力学性能，热态下塑性好，常用于制造各种深拉伸和弯曲制造的受力零件。" },
+        "007": { name: "QBe2铍青铜 (Cu-Be合金)", comp: "Be 1.8-2.1%, Ni+Co ≥0.2%, Cu 余量", desc: "极高的强度、硬度、弹性极限和疲劳极限，常用于精密弹簧、电接触元件。" },
+        "008": { name: "Inconel 718 镍基高温合金", comp: "Ni 50-55%, Cr 17-21%, Nb 4.75-5.5%, Fe 余量", desc: "在-253~700℃温度范围内具有良好的综合性能，用于航空发动机涡轮盘等。" },
+        "009": { name: "AZ31B变形镁合金", comp: "Al 2.5-3.5%, Zn 0.6-1.4%, Mn 0.2-1.0%, Mg 余量", desc: "比强度高、减震性好，广泛应用于汽车、电子产品的轻量化壳体。" },
+        "010": { name: "Q235普通碳素结构钢", comp: "C 0.12-0.20%, Mn 0.30-0.67%, Si ≤0.30%, Fe 余量", desc: "含碳量适中，综合性能较好，强度、塑性和焊接等性能得到较好配合，建筑常用。" }
+      };
+
+      function refreshList() {
+        const listElement = document.getElementById("demoList");
+        if(!listElement) return;
+        listElement.innerHTML = "";
+        Object.keys(database).sort().forEach(code => {
+          let li = document.createElement("li");
+          li.className = "data-item";
+          li.innerHTML = `<span class="yellow-badge">${code}</span> ${database[code].name}`;
+          listElement.appendChild(li);
+        });
+      }
+      window.onload = refreshList;
+
+      function performSearch() {
+        const query = document.getElementById("searchInput").value.trim();
+        const resultDisplay = document.getElementById("resultDisplay");
+
+        if (query === "") {
+            resultDisplay.innerHTML = '<span style="color:#f7e018; display:block; padding: 12px; background: rgba(247,224,24,0.1); border-radius: 8px;">⚠️ 请输入需要检索的物资编号 (如: 001)</span>';
+            return;
+        }
+
+        const item = database[query];
+        if (item) {
+          resultDisplay.innerHTML = `
+            <div style="text-align: left; padding: 20px; width: 95%; box-sizing: border-box; background: rgba(0, 230, 118, 0.1); border: 1px dashed #00e676; border-radius: 8px;">
+                <div style="margin-bottom: 12px;">✅ 检索成功：<strong style="color:#00e676; font-size:22px;">${item.name}</strong></div>
+                <div style="font-size: 15px; color: #fff; margin-bottom: 8px; line-height: 1.5;">🧪 <strong>成分：</strong>${item.comp}</div>
+                <div style="font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.6; white-space: normal; word-break: break-word;">📝 <strong>简介：</strong>${item.desc}</div>
+            </div>`;
+        } else {
+          resultDisplay.innerHTML = `
+            <div style="padding: 12px; background: rgba(255, 71, 87, 0.1); border-radius: 8px;">
+                ❌ 未找到编号为 <strong style="color:#ff4757;">[${query}]</strong> 的物资
+            </div>`;
+        }
+      }
+
+      const dropdownBtn = document.getElementById('dropdownBtn');
+      const dropdownMenu = document.getElementById('dropdownMenu');
+      dropdownBtn.addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); dropdownMenu.classList.toggle('show'); });
+      document.addEventListener('click', function(e) { if (!dropdownBtn.contains(e.target)) dropdownMenu.classList.remove('show'); });
+
+      const currentUserRole = localStorage.getItem('userRole') || 'student';
+      document.getElementById('rolePill').innerText = 'hi, ' + currentUserRole;
+
+      const homeLogo = document.getElementById('dynamicHomeLogo');
+      const roleHomeMap = { 'admin': 'bone骨架（首页） 管理员页面.html', 'teacher': 'bone骨架（首页） 教师页面.html', 'student': 'bone骨架（首页） 学生页面.html' };
+      if (homeLogo) homeLogo.href = roleHomeMap[currentUserRole] || 'index.html';
+
+      const navQueryBtn = document.getElementById('navQueryBtn');
+      const roleQueryMap = { 'admin': 'Administrator.html', 'teacher': 'teacher.html', 'student': 'student.html' };
+      if (navQueryBtn) navQueryBtn.href = roleQueryMap[currentUserRole] || '#';
+    </script>
+  </body>
+</html>

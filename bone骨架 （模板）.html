@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多光谱材料识别数据管理系统</title>
+    <link rel="stylesheet" href="骨架粗略.css">
+    <style>
+
+
+
+
+
+
+    </style>
+</head>
+<body>
+
+<div class="hero-container">
+  
+  <header class="navbar">
+    <a href="bone骨架（首页）.html">
+      <div class="logo">计设</div>
+    </a>
+    
+    <nav class="nav-links">
+      <div class="nav-item has-dropdown">
+        <button class="nav-btn">识别材料<span class="arrow">▾</span></button>
+        <div class="dropdown-menu">
+          <a href="#">连接设备</a>
+          <a href="#">识别区域</a>
+          
+        </div>
+      </div>
+      
+      <a href="#" class="nav-btn">查询材料</a>
+      <a href="#" class="nav-btn">关于我们</a>
+      <!-- <a href="#" class="nav-btn">Team</a>
+      <a href="#" class="nav-btn">News</a> -->
+    </nav>
+
+    <a href="bone骨架 （模板）.html">
+      <button class="cta-btn">
+      欢迎
+      </button>
+    </a>
+  </header>
+
+
+
+
+
+  
+</div>
+
+<script>
+  // 获取需要点击的元素和需要显示的菜单
+const dropdownContainer = document.querySelector('.has-dropdown');
+const dropdownBtn = dropdownContainer.querySelector('.nav-btn');
+const dropdownMenu = dropdownContainer.querySelector('.dropdown-menu');
+
+// 点击按钮时触发
+dropdownBtn.addEventListener('click', function(e) {
+  e.preventDefault(); // 阻止a标签默认跳转
+  e.stopPropagation();
+  
+  // 切换菜单的显示/隐藏状态
+  dropdownMenu.classList.toggle('show');
+  
+  // 给父容器加个active类，用来改变按钮自己（从透明变成白色）的样式
+  dropdownContainer.classList.toggle('active');
+});
+
+// 进阶优化：点击页面其他地方时，关掉下拉菜单
+document.addEventListener('click', function(e) {
+  if (!dropdownContainer.contains(e.target)) {
+    dropdownMenu.classList.remove('show');
+    dropdownContainer.classList.remove('active');
+  }
+});
+
+
+
+</script>
+
+
+
+
+
+
+    
+</body>
+</html>

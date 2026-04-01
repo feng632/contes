@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>识别区域 - 动态测试模块</title>
+    <link rel="stylesheet" href="骨架粗略.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    <style>
+        /* 1. 基础环境锁定 */
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background-color: #000 !important; overflow: hidden;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+
+        .hero-container {
+            width: 100% !important; height: 100vh;
+            background-image: url('images/测试模块/背景四.png');
+            background-size: cover; background-position: center;
+            position: relative; overflow: hidden; 
+        }
+
+        /* 修改前: top: 130px; */
+        .page-header-abs {
+             position: absolute; 
+            top: 80px; /* ⬆️ 标题上移，减少顶部留白 */
+            left: 45%;
+            transform: transla  teX(-50%); 
+             z-index: 100;
+            }
+        .img-header-title { 
+            height: 60px; width: auto; 
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1), filter 0.3s ease;
+        }
+        .img-header-title:hover {
+            transform: translateY(-6px) scale(1.03);
+            filter: drop-shadow(0 10px 20px rgba(0, 255, 180, 0.4));
+        }
+
+        /* 修改前: top: 62% !important; */
+            .main-stage-abs {
+             position: absolute; 
+             left: 50% !important; 
+            top: 55% !important; /* ⬆️ 核心：将整个功能区整体向上提约 8% 的屏幕高度 */
+            transform: translate(-50%, -50%) !important;
+            display: flex !important; 
+            align-items: stretch !important; 
+            gap: 30px !important;
+            z-index: 10; 
+            width: 1310px !important; 
+            }
+
+        /* 左侧面板高度调整为更高 */
+        .left-panel {
+            flex: none !important; width: 380px !important; height: 580px !important;
+            background-color: transparent !important; border: none !important; 
+            background-image: url('images/测试模块/测试模块背景方框.png') !important;
+            background-size: 100% 100% !important; background-repeat: no-repeat !important;
+            display: flex !important; flex-direction: column !important;
+            justify-content: flex-start !important; align-items: flex-start !important;
+            padding: 65px 50px !important; gap: 30px !important; box-sizing: border-box !important;
+        }
+        .left-title-img { height: 30px; width: auto; object-fit: contain; } 
+        .left-desc-img { height: 20px; width: auto; object-fit: contain; opacity: 0.8; } 
+
+        /* ========================================= */
+        /* 重构：右侧动态面板 */
+        /* ========================================= */
+        .right-panel {
+            flex: none !important;
+            width: 900px !important;
+            height: 580px !important;
+            background-image: url('images/测试模块/光波图背景方框.png') !important;
+            background-size: 100% 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-between !important; /* 上下分布 */
+            padding: 45px 55px !important; /* 留出内边距，匹配截图观感 */
+            box-sizing: border-box !important;
+            position: relative !important; 
+        }
+
+        /* 各个模块标题字效 */
+        .panel-section-title {
+            color: #fff;
+            font-size: 26px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin: 0 0 15px 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* 顶部：图表区域 */
+        .chart-section { 
+            width: 100%; 
+            height: auto; /* 🌟 核心修改 1：取消固定百分比，让内容自然撑开 */
+            flex-shrink: 0; 
+        }
+        .chart-card {
+            background: #fff;
+            border-radius: 12px;
+            width: 100%;
+            height: 200px; /* 🌟 核心修改 2：微微压扁白框高度，给底部让出绝对安全的空间 */
+            padding: 10px;
+            box-sizing: border-box;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        /* 底部：成分与按钮区域 */
+        /* 底部：成分与按钮区域 */
+        .bottom-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            width: 100%;
+            flex: 1; /* 🌟 核心：继续自动占满空间，这个不变 */
+            margin-top: 25px; 
+            
+            /* 🌟 核心救命代码 1：把原本的 overflow: hidden; 改为 overflow: visible; 🌟 */
+            /* 这意味着父容器不再剪切子元素，允许子元素在悬停长大时溢出一点边界。 */
+            overflow: visible; 
+            
+            /* 🌟 核心救命代码 2：为了配合 visible，我们必须确保右侧的按钮组（.btn-group）在垂直方向居中或者沉底。 🌟 */
+            /* 这样它上下都有呼吸空间，长大时不会撞到上面或下面的其他图层。 */
+            /* 我们在下面的 .btn-group 里做这个配合。 */
+        }
+
+        .analysis-section { 
+            display: flex; flex-direction: column; 
+            width: 60%; 
+        }
+
+        /* ================= 全新：高科技能量条排版 ================= */
+        .component-list {
+            display: flex; flex-direction: column; 
+            gap: 8px;
+            width: 95%; 
+            max-height: 180px; /* 🌟 核心：继续限制列表最大高度，防止它往下撑破 */
+            overflow-y: auto;  /* 🌟 核心：元素过多时自动开启滚动条 */
+            padding-right: 10px;
+        }
+        
+        /* 🌟 新增：美化内部滚动条，变成极细的发光绿条 */
+        .component-list::-webkit-scrollbar { width: 4px; }
+        .component-list::-webkit-scrollbar-thumb { background: rgba(0, 230, 118, 0.4); border-radius: 2px; }
+        .component-list::-webkit-scrollbar-track { background: transparent; }
+
+        .comp-item-tech {
+            display: flex; flex-direction: column; gap: 6px; width: 100%;
+        }
+        .comp-item-tech {
+            display: flex; flex-direction: column; gap: 6px; width: 100%;
+        }
+        .comp-header {
+            display: flex; justify-content: space-between; align-items: flex-end;
+        }
+        /* 元素名称变成科技感小标签 */
+        .comp-name {
+            color: #fff; font-size: 14px; font-weight: bold; letter-spacing: 1px;
+            background: rgba(255,255,255,0.15); padding: 2px 8px; border-radius: 4px;
+        }
+        /* 发光数值 */
+        .comp-val {
+            color: #00e676; font-family: monospace; font-size: 16px; font-weight: bold;
+            text-shadow: 0 0 8px rgba(0, 230, 118, 0.5);
+        }
+        /* 进度条轨道 */
+        .comp-bar-track {
+            width: 100%; height: 6px; background: rgba(255,255,255,0.1);
+            border-radius: 3px; overflow: hidden; position: relative;
+        }
+        /* 进度条发光填充与生长动画 */
+        .comp-bar-fill {
+            height: 100%; background: #00e676; border-radius: 3px;
+            box-shadow: 0 0 10px rgba(0, 230, 118, 0.8);
+            transform-origin: left;
+            animation: barFill 1s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+        }
+        @keyframes barFill {
+            from { transform: scaleX(0); }
+            to { transform: scaleX(1); }
+        }
+
+        /* 右下角按钮组 */
+        .btn-group {
+            display: flex; flex-direction: column; gap: 20px; align-items: flex-end;
+            align-self: flex-end; /* 🌟 核心修改：让右侧按钮组单独保持底部对齐（沉底） */
+        }
+        .action-btn { 
+            height: 48px; /* 高度可以稍微调大一点点，让它更饱满 */
+            width: auto;  /* 宽度根据高度自动按比例缩放 */
+            flex-shrink: 0; /* 🌟 核心救命代码：绝对禁止被父容器挤压变形！有多大就必须占多大空间 */
+            cursor: pointer; 
+            transition: all 0.2s ease; 
+        }
+        
+        .action-btn:hover {
+            transform: scale(1.05);
+            filter: drop-shadow(0 0 12px rgba(0, 255, 180, 0.6));
+        }
+
+        /* 下拉菜单 */
+       .dropdown-menu a {
+            transition: all 0.2s ease-in-out !important;
+            background: rgba(255, 255, 255, 0.15) !important;
+            backdrop-filter: blur(10px) !important;
+            
+        }
+       .dropdown-menu a:hover {
+            transform: translateY(-3px) !important; /* 微微上浮，手感更好 */
+            background: rgba(255, 255, 255, 0.35) !important; /* 背景变成更亮的半透明白色 */
+            color: #ffffff !important; /* 确保文字是纯白 */
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.8) !important; /* 让文字本身发出柔和的白光 */
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2) !important; /* 整个胶囊边缘泛起淡淡的白晕 */
+            filter: none !important;
+            outline: none !important;
+        }
+       .has-dropdown { perspective: 1000px; }
+    </style>
+</head>
+<body>
+
+<div class="hero-container">
+    <header class="navbar">
+        <a href="#" class="nav-logo" id="dynamicHomeLogo"><img src="images/首页/主页面.png" alt="首页"></a>
+        <nav class="nav-links">
+            <div class="nav-item has-dropdown">
+                <a href="javascript:void(0)" class="nav-img-btn" id="dropdownBtn"><img src="images/首页/识别材料.png" alt="识别材料"></a>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <a href="bone骨架 连接设备.html">连接设备</a> 
+                    <a href="bone骨架 测试模块.html">识别区域</a>
+                </div>
+            </div>
+            <a href="#" class="nav-img-btn" id="navQueryBtn"><img src="images/首页/查询材料.png" alt="查询材料"></a>
+            <a href="about.html" class="nav-img-btn"><img src="images/首页/关于我们.png" alt="关于我们"></a>
+        </nav>
+        <div class="auth-buttons">
+            <div id="rolePill" style="background-color: #98FF98; color: #000; padding: 10px 20px; border-radius: 30px; font-weight: 800; cursor: pointer;">hi, user</div>
+        </div>
+    </header>
+
+    <!-- <div class="page-header-abs">
+        <img src="images/测试模块/识别区域.png" alt="识别区域" class="img-header-title">
+    </div> -->
+
+    <main class="main-stage-abs">
+        <div class="left-panel">
+            <img src="images/测试模块/FeatureSubtitle.png" class="left-title-img" alt="测试模块标题">
+            <img src="images/测试模块/FeatureSubtitle1.png" class="left-desc-img" alt="使用说明">
+        </div>
+
+        <div class="right-panel">
+            
+            <div class="chart-section">
+                <h2 class="panel-section-title">光波图实时监测</h2>
+                <div class="chart-card">
+                    <div id="waveChart" style="width: 100%; height: 100%;"></div>
+                </div>
+            </div>
+
+            <div class="bottom-section">
+                <div class="analysis-section">
+                    <h2 class="panel-section-title">信息分成分析</h2>
+                    <div class="component-list" id="componentList">
+                        <div class="comp-item" style="color: rgba(255,255,255,0.4); font-size: 16px;">
+                            等待载入样本...
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <img src="images/测试模块/开始测试.png" alt="开始测试" class="action-btn" id="startTestBtn">
+                    <!-- <img src="images/测试模块/存入数据库.png" alt="存入数据库" class="action-btn"> -->
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<script>
+    // ================== 1. 基础逻辑：导航与权限 ==================
+    const userRole = localStorage.getItem('userRole') || 'guest';
+    const rolePill = document.getElementById('rolePill');
+    if(rolePill) rolePill.innerText = 'hi, ' + userRole;
+
+    const roleQueryMap = { 'admin': 'Administrator.html', 'teacher': 'teacher.html', 'student': 'student.html' };
+    const roleHomeMap = { 'admin': 'bone骨架（首页） 管理员页面.html', 'teacher': 'bone骨架（首页） 教师页面.html', 'student': 'bone骨架（首页） 学生页面.html' };
+
+    const navQueryBtn = document.getElementById('navQueryBtn');
+    if(navQueryBtn) navQueryBtn.href = roleQueryMap[userRole] || '#';
+    const homeLogo = document.getElementById('dynamicHomeLogo');
+    if(homeLogo) homeLogo.href = roleHomeMap[userRole] || 'index.html';
+
+    const dBtn = document.getElementById('dropdownBtn');
+    const dMenu = document.getElementById('dropdownMenu');
+    if(dBtn && dMenu) {
+        dBtn.onclick = (e) => { e.preventDefault(); e.stopPropagation(); dMenu.classList.toggle('show'); };
+    }
+    document.onclick = () => { if(dMenu) dMenu.classList.remove('show'); };
+
+    // ================== 2. 核心逻辑：ECharts 图表与随机生成 ==================
+    // 初始化 ECharts 实例
+    const chartDom = document.getElementById('waveChart');
+    const myChart = echarts.init(chartDom);
+    
+    // 图表基础配置 (高仿截图中的极简科技风)
+    let option = {
+        grid: { top: 30, right: 30, bottom: 20, left: 40, containLabel: true },
+        xAxis: { 
+            type: 'category', 
+            data: Array.from({length: 100}, (_, i) => i), // 100个数据点
+            show: false // 隐藏 X 轴刻度，看起来更像连续光谱
+        },
+        yAxis: { 
+            type: 'value', 
+            splitLine: { lineStyle: { color: '#f0f0f0' } } // 浅色网格线
+        },
+        series: [{
+            data: [], // 初始数据为空
+            type: 'line',
+            smooth: 0.3, // 让折线平滑
+            symbol: 'none', // 不显示数据点圆圈
+            itemStyle: { color: '#00e676' }, // 线条主色调：发光绿
+            areaStyle: {
+                // 渐变填充区域
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    { offset: 0, color: 'rgba(0, 230, 118, 0.4)' },
+                    { offset: 1, color: 'rgba(0, 230, 118, 0.02)' }
+                ])
+            }
+        }]
+    };
+    myChart.setOption(option);
+
+    // 【开始测试】按钮点击事件
+    document.getElementById('startTestBtn').addEventListener('click', function() {
+        
+        // 1. 关闭 ECharts 的线条平滑，让折线显得锐利
+        myChart.setOption({
+            series: [{
+                smooth: false, 
+                lineStyle: { width: 1.5 } 
+            }]
+        });
+
+        // 2. 生成光谱图底噪
+        let randomData = [];
+        let dataLength = 500;
+        for (let i = 0; i < dataLength; i++) {
+            randomData.push(Math.random() * 10 + 5); 
+        }
+
+        // 3. 注入特征峰
+        function addPeak(index, height) {
+            if(index > 0 && index < dataLength - 1) {
+                randomData[index] += height;           
+                randomData[index-1] += height * 0.3;   
+                randomData[index+1] += height * 0.2;
+            }
+        }
+        addPeak(Math.floor(dataLength * 0.2), Math.random() * 60 + 40);
+        addPeak(Math.floor(dataLength * 0.45), Math.random() * 80 + 50);
+        addPeak(Math.floor(dataLength * 0.7), Math.random() * 50 + 30);
+        addPeak(Math.floor(dataLength * 0.85), Math.random() * 70 + 40);
+
+        let xAxisData = Array.from({length: dataLength}, (_, i) => i);
+        myChart.setOption({ 
+            xAxis: { data: xAxisData },
+            series: [{ data: randomData }] 
+        });
+
+        // =======================================================
+        // 🌟 4. 全新智能成分分析逻辑
+        // 定义真实的材料模板库 (基础比例)
+        const materialTemplates = [
+            { type: "奥氏体不锈钢 (类304)", elements: [{name: "Fe", base: 70}, {name: "Cr", base: 19}, {name: "Ni", base: 9}, {name: "C", base: 2}] },
+            { type: "铝合金 (类6061)", elements: [{name: "Al", base: 96}, {name: "Mg", base: 2}, {name: "Si", base: 1}, {name: "Cu", base: 1}] },
+            { type: "钛合金 (类TC4)", elements: [{name: "Ti", base: 89}, {name: "Al", base: 6}, {name: "V", base: 4}, {name: "Fe", base: 1}] },
+            { type: "普通黄铜 (类H62)", elements: [{name: "Cu", base: 62}, {name: "Zn", base: 37}, {name: "Pb", base: 1}] }
+        ];
+
+        // 随机抽取一种材料进行“光谱识别”
+        const selectedMat = materialTemplates[Math.floor(Math.random() * materialTemplates.length)];
+
+        // 模拟仪器误差：在基础值上下浮动 ±10%
+        let total = 0;
+        let results = selectedMat.elements.map(el => {
+            let val = el.base * (1 + (Math.random() * 0.2 - 0.1));
+            if (val < 0) val = 0.1; // 防止负数
+            total += val;
+            return { name: el.name, val: val };
+        });
+
+       // 拼接 HTML 并归一化处理
+        let htmlContent = `
+            <div style="font-size:15px; color:#f7e018; margin-bottom:12px; font-weight:bold; letter-spacing:1px; display:flex; align-items:center; gap:8px;">
+                <span style="display:inline-block; width:4px; height:14px; background:#f7e018; border-radius:2px; box-shadow: 0 0 8px rgba(247,224,24,0.6);"></span>
+                系统匹配: ${selectedMat.type}
+            </div>
+        `;
+
+        results.forEach(el => {
+            let percentage = ((el.val / total) * 100).toFixed(1); 
+            htmlContent += `
+                <div class="comp-item-tech">
+                    <div class="comp-header">
+                        <span class="comp-name">${el.name}</span>
+                        <span class="comp-val">${percentage}%</span>
+                    </div>
+                    <div class="comp-bar-track">
+                        <div class="comp-bar-fill" style="width: ${percentage}%;"></div>
+                    </div>
+                </div>
+            `;
+        });
+
+        // 动态渲染到界面上
+        document.getElementById('componentList').innerHTML = htmlContent;
+    });
+</script>
+
+</body>
+</html>

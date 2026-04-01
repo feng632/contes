@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理员端主页 - 多光谱材料识别数据管理系统</title>
+    <!-- 引用骨架CSS获取基础布局（包含背景网格、导航栏缩放等逻辑） -->
+    <link rel="stylesheet" href="骨架粗略.css">
+    <style>
+        /* ================= 1. 背景质感 ================= */
+        .hero-container {
+            width: 100%;
+            min-height: 100vh;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0,255,180,0.3), transparent 40%),
+                radial-gradient(circle at 80% 20%, rgba(0,255,180,0.25), transparent 40%),
+                url('images/首页/背景光效1.png');
+            background-size: cover;
+            background-position: center top; 
+            background-color: #000;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ================= 2. 标题尺寸 ================= */
+        .main-content2 {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        /* 宽度 */
+        .title-img {
+            width: 600px; 
+            height: auto;
+            display: block;
+            opacity: 0;
+            animation: pureFadeIn 1.2s ease-out forwards;
+        }
+
+        /* ================= 3. 右上角身份按钮：hi, administrator ================= */
+        .admin-identity-pill {
+            background-color: #98FF98 !important; 
+            color: #000 !important;
+            border: none;
+            padding: clamp(8px, 1vw, 12px) clamp(20px, 2vw, 35px);
+            border-radius: 30px;
+            font-size: clamp(14px, 1.1vw, 17px);
+            font-weight: 800; 
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(152, 255, 152, 0.4);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        .admin-identity-pill:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(152, 255, 152, 0.6);
+        }
+
+        /* 修正下拉菜单层级，防止被标题挡住 */
+        .dropdown-menu {
+            z-index: 1001 !important;
+        }
+
+        /* ================ 导航栏胶囊浮动增强 (局部覆盖) ================ */
+      .dropdown-menu a {
+            transition: all 0.2s ease-in-out !important;
+            background: rgba(255, 255, 255, 0.15) !important;
+            backdrop-filter: blur(10px) !important;
+            
+        }
+       .dropdown-menu a:hover {
+            transform: translateY(-3px) !important; /* 微微上浮，手感更好 */
+            background: rgba(255, 255, 255, 0.35) !important; /* 背景变成更亮的半透明白色 */
+            color: #ffffff !important; /* 确保文字是纯白 */
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.8) !important; /* 让文字本身发出柔和的白光 */
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2) !important; /* 整个胶囊边缘泛起淡淡的白晕 */
+            filter: none !important;
+            outline: none !important;
+        }
+        .has-dropdown {
+            perspective: 1000px; 
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="hero-container">
+  
+  <header class="navbar">
+    <!-- 左上角图标 -->
+    <a href="bone骨架(首页) 管理员页面.html" class="nav-logo">
+        <img src="images/首页/主页面.png" alt="首页">
+    </a>
+    
+    <!-- 中间导航菜单 -->
+    <nav class="nav-links">
+      <div class="nav-item has-dropdown">
+        <a href="javascript:void(0)" class="nav-img-btn" id="dropdownBtn">
+          <img src="images/首页/识别材料.png" alt="识别材料">
+        </a>
+        <div class="dropdown-menu" id="dropdownMenu">
+          <a href="bone骨架 连接设备.html">连接设备</a> 
+          <a href="bone骨架 测试模块.html">识别区域</a>
+        </div>
+      </div>
+      
+      <!-- 查询材料：管理员点击后进入管理中枢（增删改查页） -->
+      <a href="Administrator.html" class="nav-img-btn">
+        <img src="images/首页/查询材料.png" alt="管理中枢">
+      </a>
+      
+      <a href="about.html" class="nav-img-btn">
+        <img src="images/首页/关于我们.png" alt="关于我们">
+      </a>
+    </nav>
+
+    <!-- 右上角：Hi, administrator 身份标识 -->
+    <div class="auth-buttons">
+      <div class="admin-identity-pill">hi, administrator</div>
+    </div>
+  </header>
+
+  <!-- 中间主标题区域 -->
+  <main class="main-content2">
+    <img src="images/首页/标题.png" alt="多光谱材料识别数据管理系统" class="title-img">
+  </main>
+
+</div>
+
+<script>
+    // 下拉菜单控制逻辑
+    const dropdownBtn = document.getElementById('dropdownBtn');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+    const dropdownContainer = document.querySelector('.has-dropdown');
+
+    dropdownBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        dropdownMenu.classList.toggle('show');
+        dropdownContainer.classList.toggle('active');
+    });
+
+    document.addEventListener('click', function(e) {
+        if (!dropdownContainer.contains(e.target)) {
+            dropdownMenu.classList.remove('show');
+            dropdownContainer.classList.remove('active');
+        }
+    });
+
+    // 身份点击注销提示
+    document.querySelector('.admin-identity-pill').addEventListener('click', function() {
+        if(confirm("确定要注销管理员登录吗？")) {
+            // 这里填写注销后返回的普通首页文件名
+            window.location.href = 'index.html';
+        }
+    });
+</script>
+
+</body>
+</html>

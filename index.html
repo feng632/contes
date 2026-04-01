@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多光谱材料识别数据管理系统</title>
+    <link rel="stylesheet" href="骨架粗略.css">
+</head>
+<body>
+<style>
+    /* ================ 导航栏胶囊浮动增强 (局部覆盖) ================ */
+      .dropdown-menu a {
+            transition: all 0.2s ease-in-out !important;
+            background: rgba(255, 255, 255, 0.15) !important;
+            backdrop-filter: blur(10px) !important;
+            
+        }
+       .dropdown-menu a:hover {
+            transform: translateY(-3px) !important; /* 微微上浮，手感更好 */
+            background: rgba(255, 255, 255, 0.35) !important; /* 背景变成更亮的半透明白色 */
+            color: #ffffff !important; /* 确保文字是纯白 */
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.8) !important; /* 让文字本身发出柔和的白光 */
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2) !important; /* 整个胶囊边缘泛起淡淡的白晕 */
+            filter: none !important;
+            outline: none !important;
+        }
+        .has-dropdown {
+            perspective: 1000px; 
+        }
+</style>
+<div class="hero-container">
+  
+  <header class="navbar">
+    <!-- 左上角：主页面 -->
+    <a href="index.html" class="nav-logo">
+      <img src="images/首页/主页面.png" alt="主页面">
+    </a>
+    
+    <!-- 中间：导航菜单 -->
+    <nav class="nav-links">
+      <!-- 识别材料（带下拉） -->
+      <div class="nav-item has-dropdown">
+        <a href="#" class="nav-img-btn" id="dropdownBtn">
+          <img src="images/首页/识别材料.png" alt="识别材料">
+        </a>
+        <div class="dropdown-menu">
+          <a href="bone骨架 连接设备.html">连接设备</a> 
+          <a href="bone骨架 测试模块.html">识别区域</a>
+        </div>
+      </div>
+      
+      <!-- 查询材料 -->
+      <a href="#" class="nav-img-btn">
+        <img src="images/首页/查询材料.png" alt="查询材料">
+      </a>
+      
+      <!-- 关于我们 -->
+      <a href="about.html" class="nav-img-btn">
+        <img src="images/首页/关于我们.png" alt="关于我们">
+      </a>
+    </nav>
+
+    <!-- 右上角：注册与登录 -->
+    <div class="auth-buttons">
+      <a href="#注册" class="nav-img-btn" id="signupBtn">
+        <img src="images/首页/SignUp.png" alt="SignUp">
+      </a>
+      <a href="#登录" class="nav-img-btn" id="loginBtn"> 
+        <img src="images/首页/Login.png" alt="Login">
+      </a>
+    </div>
+  </header>
+
+  <main class="main-content2">
+  <img src="images/首页/标题.png" class="title-img">
+</main>
+
+
+
+
+
+<!-- ================登录页弹窗============== -->
+<div class="modal-overlay" id="loginModal">
+    <div class="auth-modal">
+        <!-- 顶部返回按钮 -->
+        <div class="modal-header">
+            <img src="images/注册与登录页面/返回.png" alt="返回" class="back-btn" id="loginCloseBtn">
+        </div>
+        
+        <div class="modal-title-text">登录</div>
+        
+        <!-- 登录表单 -->
+        <form class="auth-form" id="loginForm">
+            <div class="form-item">
+                <img src="images/注册与登录页面/身份登录.png" alt="身份" class="label-img">
+                <input type="text" id="loginRole" class="input-gray" placeholder="">
+            </div>
+            <div class="form-item">
+                <img src="images/注册与登录页面/用户名.png" alt="用户名" class="label-img">
+                <input type="text" id="loginUsername" class="input-green" placeholder="">
+            </div>
+            <div class="form-item">
+                <img src="images/注册与登录页面/密码.png" alt="密码" class="label-img">
+                <input type="password" id="loginPassword" class="input-gray" placeholder="">
+            </div>
+            <button type="submit" class="submit-img-btn">
+                <img src="images/注册与登录页面/Button2.png" alt="Login">
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- ================ 注册页弹窗 ============== -->
+<div class="modal-overlay" id="signupModal">
+    <div class="auth-modal">
+        <!-- 顶部返回按钮 -->
+        <div class="modal-header">
+            <img src="images/注册与登录页面/返回.png" alt="返回" class="back-btn" id="signupCloseBtn">
+        </div>
+
+        <div class="modal-title-text">注册</div>
+        
+        <!-- 注册表单 -->
+        <form class="auth-form" id="signupForm">
+            <div class="form-item">
+                <img src="images/注册与登录页面/身份注册.png" alt="身份" class="label-img">
+                <input type="text" id="signupRole" class="input-green" placeholder="">
+            </div>
+            <div class="form-item">
+                <img src="images/注册与登录页面/用户名.png" alt="用户名" class="label-img">
+                <input type="text" id="signupUsername" class="input-gray" placeholder="">
+            </div>
+            <div class="form-item">
+                <img src="images/注册与登录页面/邮箱.png" alt="邮箱" class="label-img">
+                <input type="text" id="signupEmail" class="input-green" placeholder="">
+            </div>
+            <div class="form-item">
+                <img src="images/注册与登录页面/密码.png" alt="密码" class="label-img">
+                <input type="password" id="signupPassword" class="input-gray" placeholder="">
+            </div>
+            <button type="submit" class="submit-img-btn">
+                <img src="images/注册与登录页面/Button.png" alt="Sign up">
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+// 获取需要点击的元素和需要显示的菜单
+// 获取下拉菜单元素
+const dropdownContainer = document.querySelector('.has-dropdown');
+const dropdownBtn = document.getElementById('dropdownBtn'); 
+const dropdownMenu = dropdownContainer.querySelector('.dropdown-menu');
+
+// 下拉菜单显示逻辑
+dropdownBtn.addEventListener('click', function(e) {
+  e.preventDefault(); 
+  e.stopPropagation();
+  dropdownMenu.classList.toggle('show');
+  dropdownContainer.classList.toggle('active');
+});
+
+document.addEventListener('click', function(e) {
+  if (!dropdownContainer.contains(e.target)) {
+    dropdownMenu.classList.remove('show');
+    dropdownContainer.classList.remove('active');
+  }
+});
+
+// ================== 登录与注册弹窗逻辑 ===================
+const loginModal = document.getElementById('loginModal');
+const signupModal = document.getElementById('signupModal');
+const loginBtn = document.getElementById('loginBtn');
+const signupBtn = document.getElementById('signupBtn');
+const loginCloseBtn = document.getElementById('loginCloseBtn');
+const signupCloseBtn = document.getElementById('signupCloseBtn');
+
+const loginForm = document.getElementById('loginForm');
+const signupForm = document.getElementById('signupForm');
+const loginUsername = document.getElementById('loginUsername');
+const loginPassword = document.getElementById('loginPassword');
+
+// 打开登录
+loginBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    loginModal.classList.add('active');
+});
+
+// 打开注册
+signupBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    signupModal.classList.add('active');
+});
+
+// 关闭登录 (点击返回)
+loginCloseBtn.addEventListener('click', function() {
+    loginModal.classList.remove('active');
+    loginForm.reset(); 
+});
+
+// 关闭注册 (点击返回)
+signupCloseBtn.addEventListener('click', function() {
+    signupModal.classList.remove('active');
+    signupForm.reset(); 
+});
+
+// 点击遮罩层空白处关闭弹窗
+[loginModal, signupModal].forEach(modal => {
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.classList.remove('active');
+            modal.querySelector('form').reset();
+        }
+    });
+});
+
+// 按ESC键关闭弹窗
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        if (loginModal.classList.contains('active')) loginModal.classList.remove('active');
+        if (signupModal.classList.contains('active')) signupModal.classList.remove('active');
+        loginForm.reset();
+        signupForm.reset();
+    }
+});
+
+// ================= 登录验证逻辑 =================
+loginForm.addEventListener('submit', function(e) {
+    e.preventDefault(); 
+    
+    let isValid = true;
+    if (!loginUsername.value.trim() || !loginPassword.value.trim()) {
+        alert("请输入用户名和密码！");
+        isValid = false;
+    }
+    
+    if (isValid) {
+        const inputUser = loginUsername.value.trim();
+        const inputPass = loginPassword.value.trim();
+
+        if (inputPass !== '123456') {
+            alert('密码错误！(测试密码请统一输入 123456)');
+            return; 
+        }
+
+        if (inputUser === 'admin') {
+            localStorage.setItem('userRole', 'admin');
+            window.location.href = 'bone骨架（首页） 管理员页面.html'; 
+        } else if (inputUser === 'student') {
+            localStorage.setItem('userRole', 'student');
+            window.location.href = 'bone骨架（首页） 学生页面.html'; 
+        } else if (inputUser === 'teacher') {
+            localStorage.setItem('userRole', 'teacher');
+            window.location.href = 'bone骨架（首页） 教师页面.html'; 
+        } else {
+            alert('该用户不存在！测试请使用：admin, student 或 teacher');
+            loginUsername.value = '';
+            loginPassword.value = '';
+        }
+    }
+});
+
+// ================= 注册提交逻辑 =================
+signupForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    alert("注册成功！请返回进行登录。");
+    signupModal.classList.remove('active');
+    signupForm.reset();
+});
+
+// ================= 导航栏拦截：强制要求登录 =================
+const requireLoginLinks = document.querySelectorAll('.nav-links a');
+requireLoginLinks.forEach(function(link) {
+    link.addEventListener('click', function(e) {
+        // 如果点的是带下拉的菜单图片，就不拦截
+        if(link.id === 'dropdownBtn') return;
+        
+        e.preventDefault(); 
+        dropdownMenu.classList.remove('show');
+        dropdownContainer.classList.remove('active');
+        loginModal.classList.add('active'); // 强制弹出登录框
+    });
+});
+
+
+</script>
+
+
+
+    
+</body>
+</html>
